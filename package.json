@@ -1,0 +1,30 @@
+{
+  "name": "function-thread",
+  "version": "0.1.0",
+  "description": "Run the function in a separate thread",
+  "main": "index.js",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "generic-pool": "^3.1.7",
+    "lodash": "^4.17.4",
+    "threads": "^0.7.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mvcbox/node-function-thread.git"
+  },
+  "keywords": [
+    "Worker",
+    "Thread"
+  ],
+  "author": "mvcbox.org@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mvcbox/node-function-thread/issues"
+  },
+  "homepage": "https://github.com/mvcbox/node-function-thread#readme"
+}
