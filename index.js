@@ -7,8 +7,24 @@ const Bluebird = require('bluebird');
 const genericPool = require('generic-pool');
 
 /**
- * @param func
- * @param options
+ * @param {Function}    func
+ * @param {Object}      [options]
+ * @param {Number}      [options.timeout]
+ * @param {Boolean}     [options.usePool]
+ * @param {Object}      [options.pool]
+ * @param {Number}      [options.pool.max]
+ * @param {Number}      [options.pool.min]
+ * @param {Number}      [options.pool.maxWaitingClients]
+ * @param {Boolean}     [options.pool.testOnBorrow]
+ * @param {Number}      [options.pool.acquireTimeoutMillis]
+ * @param {Boolean}     [options.pool.fifo]
+ * @param {Number}      [options.pool.priorityRange]
+ * @param {Boolean}     [options.pool.autostart]
+ * @param {Number}      [options.pool.evictionRunIntervalMillis]
+ * @param {Number}      [options.pool.numTestsPerRun]
+ * @param {Number}      [options.pool.softIdleTimeoutMillis]
+ * @param {Number}      [options.pool.idleTimeoutMillis]
+ * @param {Function}    [options.pool.Promise]
  * @returns {Function}
  */
 module.exports = function (func, options) {
