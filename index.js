@@ -35,6 +35,11 @@ module.exports = function (func, options) {
             max: os.cpus().length * 2,
             min: os.cpus().length,
             testOnBorrow: true,
+            fifo: false,
+            idleTimeoutMillis: 3600000,
+            softIdleTimeoutMillis: 600000,
+            evictionRunIntervalMillis: 60000,
+            numTestsPerRun: os.cpus().length,
             Promise: Bluebird
         }
     }, options || {});
