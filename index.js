@@ -45,10 +45,10 @@ module.exports = function (func, options) {
     }, options || {});
 
     if (options.usePool) {
-        let pool = genericPool.createPool({
+        var pool = genericPool.createPool({
             create: function () {
                 return new Bluebird(function(resolve){
-                    let thread = spawn(func);
+                    var thread = spawn(func);
                     resolve(thread);
                 });
             },
@@ -65,7 +65,7 @@ module.exports = function (func, options) {
 
         return function (input) {
             return pool.acquire().then(function(thread) {
-                let promise = new Bluebird(function (resolve, reject) {
+                var promise = new Bluebird(function (resolve, reject) {
                     thread.send(input).on('message', resolve).on('error', reject);
                 });
 
@@ -84,9 +84,9 @@ module.exports = function (func, options) {
     }
 
     return function (input) {
-        let thread = spawn(func);
+        var thread = spawn(func);
 
-        let promise = new Bluebird(function (resolve, reject) {
+        var promise = new Bluebird(function (resolve, reject) {
             thread.send(input).on('message', resolve).on('error', reject);
         });
 
