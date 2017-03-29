@@ -48,8 +48,7 @@ module.exports = function (func, options) {
         var pool = genericPool.createPool({
             create: function () {
                 return new Bluebird(function(resolve){
-                    var thread = spawn(func);
-                    resolve(thread);
+                    resolve(spawn(func));
                 });
             },
             destroy: function (thread) {
@@ -85,7 +84,6 @@ module.exports = function (func, options) {
 
     return function (input) {
         var thread = spawn(func);
-
         var promise = new Bluebird(function (resolve, reject) {
             thread.send(input).on('message', resolve).on('error', reject);
         });
