@@ -17,15 +17,20 @@ function sendError(err) {
 var ___workerFunction;
 process.on('uncaughtException', sendError);
 process.on('unhandledRejection', sendError);
-process.on('message', function(data) {
-    if (___workerFunction) {
-        ___workerFunction(data, function (result) {
-            process.send({
-                type: 'result',
-                data: result
-            });
-        }, sendError);
-    } else {
-        eval('___workerFunction = ' + data);
+process.on('message', function(message) {
+    switch (message.type) {
+        case 'input':
+            ___workerFunction(message.data, function (result) {
+                process.send({
+                    type: 'result',
+                    data: result
+                });
+            }, sendError);
+            break;
+        case 'function':
+            eval('___workerFunction = ' + message.data);
+            break;
+        default:
+            // ...
     }
 });

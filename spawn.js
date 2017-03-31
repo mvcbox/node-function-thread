@@ -3,12 +3,18 @@ var path = require('path');
 
 module.exports = function (func) {
     var thread = childProcess.fork(path.join(__dirname, 'worker.js'));
-    thread.send(func.toString());
+    thread.send({
+        type: 'function',
+        data: func.toString()
+    });
     thread.resultHandler = function () {};
     thread.errorHandler = function () {};
     thread.exitHandler = function () {};
     thread.sendData = function (data) {
-        this.send(undefined === data ? null : data);
+        this.send({
+            type: 'input',
+            data: data
+        });
         return this;
     };
     thread.onResult = function (handler) {
@@ -23,18 +29,16 @@ module.exports = function (func) {
         this.exitHandler = handler;
         return this;
     };
-    thread.on('message', function (data) {
-        if (typeof data === 'object') {
-            switch (data.type) {
-                case 'result':
-                    this.resultHandler(data.data);
-                    break;
-                case 'error':
-                    this.errorHandler(data.data);
-                    break;
-                default:
-                    // ...
-            }
+    thread.on('message', function (message) {
+        switch (message.type) {
+            case 'result':
+                this.resultHandler(message.data);
+                break;
+            case 'error':
+                this.errorHandler(message.data);
+                break;
+            default:
+                // ...
         }
     });
     thread.on('exit', thread.exitHandler);
