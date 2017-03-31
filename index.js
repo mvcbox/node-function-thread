@@ -1,10 +1,10 @@
 'use strict';
 
-const os = require('os');
-const _ = require('lodash');
-const spawn = require('threads').spawn;
-const Bluebird = require('bluebird');
-const genericPool = require('generic-pool');
+var os = require('os');
+var _ = require('lodash');
+var spawn = require('./spawn');
+var Bluebird = require('bluebird');
+var genericPool = require('generic-pool');
 
 /**
  * @param {Function}    func
@@ -58,14 +58,14 @@ module.exports = function (func, options) {
                 });
             },
             validate: function (thread) {
-                return thread.slave.connected;
+                return thread.connected;
             }
         }, options.pool);
 
         return function (input) {
             return pool.acquire().then(function(thread) {
                 var promise = new Bluebird(function (resolve, reject) {
-                    thread.send(input).on('message', resolve).on('error', reject);
+                    thread.onResult(resolve).onError(reject).sendData(input);
                 });
 
                 if (options.timeout) {
@@ -85,7 +85,7 @@ module.exports = function (func, options) {
     return function (input) {
         var thread = spawn(func);
         var promise = new Bluebird(function (resolve, reject) {
-            thread.send(input).on('message', resolve).on('error', reject);
+            thread.onResult(resolve).onError(reject).sendData(input);
         });
 
         if (options.timeout) {
