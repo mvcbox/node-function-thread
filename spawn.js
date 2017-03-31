@@ -8,7 +8,7 @@ module.exports = function (func) {
     thread.errorHandler = function () {};
     thread.exitHandler = function () {};
     thread.sendData = function (data) {
-        this.send(data);
+        this.send(undefined === data ? null : data);
         return this;
     };
     thread.onResult = function (handler) {

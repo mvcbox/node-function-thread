@@ -1,6 +1,6 @@
 {
   "name": "function-thread",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Run the function in a separate thread",
   "main": "index.js",
   "dependencies": {

@@ -36,10 +36,10 @@ npm install function-thread --save
 const functionThread = require('function-thread');
 
 // Creating a function
-const someFunction = functionThread(function (input, done) {
+const someFunction = functionThread(function (input, resolve, reject) {
     // input - Some data for calculations
     // Some heavy calculations, which usually block the thread
-    done('Result...');
+    resolve('Result...');
 });
 
 // Run the function in a separate thread
