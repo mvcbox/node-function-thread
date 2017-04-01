@@ -1,6 +1,10 @@
+'use strict';
 var childProcess = require('child_process');
 var path = require('path');
-
+/**
+ * @param func
+ * @returns {ChildProcess}
+ */
 module.exports = function (func) {
     var thread = childProcess.fork(path.join(__dirname, 'worker.js'));
     thread.send({
