@@ -1,4 +1,5 @@
 'use strict';
+
 /**
  * @param {*} err
  */
@@ -9,14 +10,18 @@ function sendError(err) {
             stack: err.stack
         };
     }
+
     process.send({
         type: 'error',
         data: err
     });
 }
+
 var ___workerFunction;
+
 process.on('uncaughtException', sendError);
 process.on('unhandledRejection', sendError);
+
 process.on('message', function(message) {
     switch (message.type) {
         case 'input':

@@ -1,9 +1,11 @@
 'use strict';
+
 var os = require('os');
 var _ = require('lodash');
 var spawn = require('./spawn');
 var Bluebird = require('bluebird');
 var genericPool = require('generic-pool');
+
 /**
  * @param {Function}    func
  * @param {Object}      [options]
@@ -41,6 +43,7 @@ module.exports = function (func, options) {
             Promise: Bluebird
         }
     }, options || {});
+
     if (options.usePool) {
         var pool = genericPool.createPool({
             create: function () {
@@ -58,6 +61,7 @@ module.exports = function (func, options) {
                 return thread.connected;
             }
         }, options.pool);
+
         return function (input) {
             return pool.acquire().then(function(thread) {
                 var promise = new Bluebird(function (resolve, reject) {
@@ -77,6 +81,7 @@ module.exports = function (func, options) {
             });
         };
     }
+
     return function (input) {
         var thread = spawn(func);
         var promise = new Bluebird(function (resolve, reject) {
