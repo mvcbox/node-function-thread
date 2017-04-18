@@ -15,9 +15,7 @@ module.exports = function (func) {
         data: func.toString()
     });
 
-    thread.resultHandler = function () {};
-    thread.errorHandler = function () {};
-    thread.exitHandler = function () {};
+    thread.resultHandler = thread.errorHandler = thread.exitHandler = function () {};
 
     thread.sendData = function (data) {
         this.send({
