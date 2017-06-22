@@ -2,7 +2,7 @@
 
 var os = require('os');
 var _ = require('lodash');
-var spawn = require('./spawn');
+var fork = require('./fork');
 var Bluebird = require('bluebird');
 var genericPool = require('generic-pool');
 
@@ -48,7 +48,7 @@ module.exports = function (func, options) {
         var pool = genericPool.createPool({
             create: function () {
                 return new Bluebird(function(resolve){
-                    resolve(spawn(func));
+                    resolve(fork(func));
                 });
             },
             destroy: function (thread) {
@@ -83,7 +83,7 @@ module.exports = function (func, options) {
     }
 
     return function (input) {
-        var thread = spawn(func);
+        var thread = fork(func);
         var promise = new Bluebird(function (resolve, reject) {
             thread.onResult(resolve).onError(reject).sendData(input);
         });
