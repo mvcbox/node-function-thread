@@ -43,21 +43,27 @@ const someFunction = functionThread(function (input, resolve, reject) {
 });
 
 // Run the function in a separate thread
-someFunction('Some data for calculations 1').then(function (result) {
+someFunction('Some data for calculations 1', {
+    timeout: 500 // Custom timeout
+}).then(function (result) {
     console.log(result);
 }).catch(function (err) {
     console.error(err);
 });
 
 // Run the function in a separate thread
-someFunction('Some data for calculations 2').then(function (result) {
+someFunction('Some data for calculations 2', {
+    timeout: 1000 // Custom timeout
+}).then(function (result) {
     console.log(result);
 }).catch(function (err) {
     console.error(err);
 });
 
 // Run the function in a separate thread
-someFunction('Some data for calculations 3').then(function (result) {
+someFunction('Some data for calculations 3', {
+    timeout: 1500 // Custom timeout
+}).then(function (result) {
     console.log(result);
 }).catch(function (err) {
     console.error(err);

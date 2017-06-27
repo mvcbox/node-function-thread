@@ -3,7 +3,7 @@
 var os = require('os');
 var _ = require('lodash');
 var fork = require('./fork');
-var Bluebird = require('bluebird');
+var Promise = require('bluebird');
 var genericPool = require('generic-pool');
 
 /**
@@ -40,19 +40,29 @@ module.exports = function (func, options) {
             softIdleTimeoutMillis: 600000,
             evictionRunIntervalMillis: 60000,
             numTestsPerRun: os.cpus().length,
-            Promise: Bluebird
+            Promise: Promise
         }
     }, options || {});
+
+    var getThread = function () {
+        return Promise.resolve(fork(func));
+    };
+    var releaseThread = function (thread) {
+        thread.kill();
+    };
+    var destroyThread = function (thread) {
+        thread.kill();
+    };
 
     if (options.usePool) {
         var pool = genericPool.createPool({
             create: function () {
-                return new Bluebird(function(resolve){
+                return new Promise(function(resolve){
                     resolve(fork(func));
                 });
             },
             destroy: function (thread) {
-                return new Bluebird(function(resolve) {
+                return new Promise(function(resolve) {
                     thread.kill();
                     resolve();
                 });
@@ -62,41 +72,35 @@ module.exports = function (func, options) {
             }
         }, options.pool);
 
-        return function (input) {
-            return pool.acquire().then(function(thread) {
-                var promise = new Bluebird(function (resolve, reject) {
-                    thread.onResult(resolve).onError(reject).sendData(input);
-                });
-
-                if (options.timeout) {
-                    promise = promise.timeout(options.timeout);
-                }
-
-                return promise.tap(function () {
-                    pool.release(thread);
-                }).catch(function (err) {
-                    pool.destroy(thread);
-                    return Bluebird.reject(err);
-                });
-            });
-        };
+        getThread = pool.acquire.bind(pool);
+        releaseThread = pool.release.bind(pool);
+        destroyThread = pool.destroy.bind(pool);
     }
 
-    return function (input) {
-        var thread = fork(func);
-        var promise = new Bluebird(function (resolve, reject) {
-            thread.onResult(resolve).onError(reject).sendData(input);
-        });
+    /**
+     * @param {*}       input
+     * @param {Object}  [_options]
+     * @param {Number}  [_options.timeout]
+     */
+    return function (input, _options) {
+        _options = _options || {};
+        var timeout = _options.timeout || options.timeout;
 
-        if (options.timeout) {
-            promise = promise.timeout(options.timeout);
-        }
+        return getThread().then(function(thread) {
+            var promise = new Promise(function (resolve, reject) {
+                thread.onResult(resolve).onError(reject).sendData(input);
+            });
 
-        return promise.tap(function () {
-            thread.kill();
-        }).catch(function (err) {
-            thread.kill();
-            return Bluebird.reject(err);
+            if (timeout) {
+                promise = promise.timeout(timeout);
+            }
+
+            return promise.tap(function () {
+                releaseThread(thread);
+            }).catch(function (err) {
+                destroyThread(thread);
+                return Promise.reject(err);
+            });
         });
     };
 };
