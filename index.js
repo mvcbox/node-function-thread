@@ -1,8 +1,8 @@
 'use strict';
 
 var os = require('os');
-var _ = require('lodash');
 var fork = require('./fork');
+var merge = require('merge');
 var Promise = require('bluebird');
 var genericPool = require('generic-pool');
 
@@ -28,7 +28,7 @@ var genericPool = require('generic-pool');
  * @returns {Function}
  */
 module.exports = function (func, options) {
-    options = _.merge({
+    options = merge.recursive({
         timeout: 0,
         usePool: false,
         pool: {
